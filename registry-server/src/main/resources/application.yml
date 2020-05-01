@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: radish-serviceregistry
+
+  profiles:
+    active: dev
+

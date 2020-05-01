@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: radish-servicediscovery
+
+  profiles:
+    active: dev

@@ -1,0 +1,6 @@
+datacenter: aliyun
+segment: test
+etcd:
+  endpoints: ["http://172.16.10.241:12379","http://172.16.10.242:12379","http://172.16.10.243:12379"]
+  username: service_registry
+  password: Services@ypsx123
