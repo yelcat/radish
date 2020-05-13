@@ -1,16 +1,11 @@
 package com.radishframework.radish.core.client;
 
-import com.radishframework.radish.core.utils.GrpcReflectionUtils;
-import com.radishframework.radish.discovery.core.DiscoveryGrpc;
+import com.radishframework.radish.core.discovery.ServiceDiscovery;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.NameResolverProvider;
 import io.grpc.internal.SharedResourceHolder;
 
 import java.util.concurrent.ConcurrentHashMap;
-
-import static com.radishframework.radish.core.common.Constant.DEFAULT_LOAD_BALANCING_POLICY;
-import static com.radishframework.radish.core.common.Constant.OSTRICH_URL_PREFIX;
 
 public class ManagedChannelFactory {
 
@@ -18,23 +13,10 @@ public class ManagedChannelFactory {
     private final NameResolverProvider nameResolverProvider;
     private final ConcurrentHashMap<String, ManagedChannelResource> serviceResources = new ConcurrentHashMap<>();
 
-    public ManagedChannelFactory(String forAppName, String discoveryServerAddress, int discoveryServerPort) {
+    public ManagedChannelFactory(String forAppName, ServiceDiscovery serviceDiscovery) {
         this.forAppName = forAppName;
 
-        final ManagedChannel bootstrapDiscoveryChannel = ManagedChannelBuilder
-                .forAddress(discoveryServerAddress, discoveryServerPort)
-                .usePlaintext()
-                .build();
-        final DiscoveryGrpc.DiscoveryBlockingStub bootstrapDiscovery = DiscoveryGrpc.newBlockingStub(bootstrapDiscoveryChannel);
-        final ManagedChannelBuilder<?> realDiscoveryChannelBuilder = ManagedChannelBuilder
-                .forTarget(OSTRICH_URL_PREFIX + DiscoveryGrpc.SERVICE_NAME)
-                .nameResolverFactory(new RadishNameResolverProvider(bootstrapDiscovery))
-                .userAgent(forAppName)
-                .defaultLoadBalancingPolicy(DEFAULT_LOAD_BALANCING_POLICY)
-                .usePlaintext();
-        GrpcReflectionUtils.disableStatsAndTracingModule(realDiscoveryChannelBuilder);
-        this.nameResolverProvider = new RadishNameResolverProvider(
-                DiscoveryGrpc.newBlockingStub(realDiscoveryChannelBuilder.build()));
+        this.nameResolverProvider = new RadishNameResolverProvider(serviceDiscovery);
     }
 
     public ManagedChannel create(String serviceName) {

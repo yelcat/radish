@@ -5,6 +5,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.ibm.etcd.api.Event;
 import com.ibm.etcd.api.KeyValue;
+import com.ibm.etcd.api.RangeResponse;
 import com.ibm.etcd.client.kv.KvClient;
 import com.ibm.etcd.client.kv.WatchUpdate;
 import com.radishframework.radish.core.common.InstanceInfo;
@@ -97,7 +98,7 @@ public class ServiceDiscovery {
     }
 
     private void preload() {
-        final var response = client.get(ByteString.copyFromUtf8(instancesPrefix))
+        final RangeResponse response = client.get(ByteString.copyFromUtf8(instancesPrefix))
                 .asPrefix()
                 .sync();
         for (KeyValue kv : response.getKvsList()) {
@@ -115,11 +116,11 @@ public class ServiceDiscovery {
             return;
         }
 
-        final var serviceName = instance.getDescName();
-        final var instanceId = instance.getInstanceId();
+        final String serviceName = instance.getDescName();
+        final String instanceId = instance.getInstanceId();
 
         serviceInstancesRegistry.computeIfAbsent(serviceName, desc_name -> {
-            var instances = new ConcurrentHashMap<String, ServiceInstance>();
+            final Map<String, ServiceInstance> instances = new ConcurrentHashMap<String, ServiceInstance>();
             instances.put(instanceId, instance);
             return instances;
         });
@@ -141,16 +142,16 @@ public class ServiceDiscovery {
                     log.info("etcd event happend, type " + event.getType() + ", kv " + event.getKv());
                 }
 
-                final var kv = event.getKv();
+                final KeyValue kv = event.getKv();
                 switch (event.getType()) {
                     case PUT:
                         parseAndAddLocalRegistry(kv);
                         break;
                     case DELETE:
-                        final var instanceKey = kv.getKey().toStringUtf8();
-                        final var lastSlash = instanceKey.lastIndexOf(ETCD_PATH_SPLITTER);
-                        final var descName = instanceKey.substring(instancesPrefix.length() + 1, lastSlash);
-                        final var instanceId = instanceKey.substring(lastSlash + 1);
+                        final String instanceKey = kv.getKey().toStringUtf8();
+                        final int lastSlash = instanceKey.lastIndexOf(ETCD_PATH_SPLITTER);
+                        final String descName = instanceKey.substring(instancesPrefix.length() + 1, lastSlash);
+                        final String instanceId = instanceKey.substring(lastSlash + 1);
                         serviceInstancesRegistry.computeIfPresent(descName, (desc, instanceInfos) -> {
                             instanceInfos.remove(instanceId);
                             return instanceInfos;

@@ -1,6 +1,0 @@
-datacenter: aliyun
-segment: pre
-etcd:
-  endpoints: ["http://etcd1.ypsx-internal.com:12379","http://etcd2.ypsx-internal.com:12379","http://etcd3.ypsx-internal.com:12379"]
-  username: service_registry
-  password: Services@ypsx123

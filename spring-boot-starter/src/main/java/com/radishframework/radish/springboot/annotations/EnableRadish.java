@@ -1,6 +1,6 @@
 package com.radishframework.radish.springboot.annotations;
 
-import com.radishframework.radish.springboot.RadishSpringBootConfiguration;
+import com.radishframework.radish.springboot.RadishConfiguration;
 import com.radishframework.radish.springboot.server.SpringBootServerRunner;
 import org.springframework.context.annotation.Import;
 
@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Documented
 @Import({
-        RadishSpringBootConfiguration.class,
+        RadishConfiguration.class,
         SpringBootServerRunner.class,
 })
 public @interface EnableRadish {

@@ -1,11 +1,9 @@
 package com.radishframework.radish.core.client;
 
+import com.radishframework.radish.core.discovery.ServiceDiscovery;
+import com.radishframework.radish.core.common.ServiceInstance;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.radishframework.radish.discovery.core.DiscoverRequest;
-import com.radishframework.radish.discovery.core.DiscoverResponse;
-import com.radishframework.radish.discovery.core.DiscoveryGrpc;
-import com.radishframework.radish.discovery.core.InstanceInfo;
 import io.grpc.*;
 import io.grpc.internal.GrpcUtil;
 import io.grpc.internal.SharedResourceHolder;
@@ -18,6 +16,8 @@ import javax.annotation.concurrent.GuardedBy;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
+import java.util.Collection;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,10 +35,10 @@ public class RadishNameResolverProvider extends NameResolverProvider {
 
     public static final Logger logger = LoggerFactory.getLogger(RadishNameResolverProvider.class);
 
-    private final DiscoveryGrpc.DiscoveryBlockingStub discoveryStub;
+    private final ServiceDiscovery serviceDiscovery;
 
-    public RadishNameResolverProvider(@Nonnull final DiscoveryGrpc.DiscoveryBlockingStub discoveryStub) {
-        this.discoveryStub = discoveryStub;
+    public RadishNameResolverProvider(@Nonnull final ServiceDiscovery serviceDiscovery) {
+        this.serviceDiscovery = serviceDiscovery;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class RadishNameResolverProvider extends NameResolverProvider {
 
         final String authority = requireNonNull(targetUri.getAuthority(), "authority");
         final String query = targetUri.getQuery() == null ? "" : targetUri.getQuery();
-        return new RadishNameResolver(authority, query, discoveryStub,
+        return new RadishNameResolver(authority, query, serviceDiscovery,
                 GrpcUtil.SHARED_CHANNEL_EXECUTOR, GrpcUtil.TIMER_SERVICE);
     }
 
@@ -78,7 +78,7 @@ public class RadishNameResolverProvider extends NameResolverProvider {
         private final SharedResourceHolder.Resource<Executor> executorResource;
         private final SharedResourceHolder.Resource<ScheduledExecutorService> scheduledExecutorResource;
         private final Runnable resolveRunnable = new Resolve(this);
-        private final DiscoveryGrpc.DiscoveryBlockingStub discoveryStub;
+        private final ServiceDiscovery serviceDiscovery;
         private Listener listener;
         private String authority;
         @GuardedBy("this")
@@ -91,12 +91,12 @@ public class RadishNameResolverProvider extends NameResolverProvider {
         private boolean resolving;
 
         private RadishNameResolver(@Nonnull String authority, String query,
-                                    DiscoveryGrpc.DiscoveryBlockingStub discoveryStub,
+                                    ServiceDiscovery serviceDiscovery,
                                     SharedResourceHolder.Resource<Executor> executorResource,
                                     SharedResourceHolder.Resource<ScheduledExecutorService> scheduledExecutorResource) {
             this.authority =
                     (query != null && !query.isEmpty()) ? authority + "?" + query : authority;
-            this.discoveryStub = discoveryStub;
+            this.serviceDiscovery = serviceDiscovery;
             this.executorResource = executorResource;
             this.scheduledExecutorResource = scheduledExecutorResource;
         }
@@ -186,12 +186,9 @@ public class RadishNameResolverProvider extends NameResolverProvider {
             }
 
             private void resolveInternal(Listener savedListener) {
-                final DiscoverResponse discoverResponse;
+                final Optional<Collection<ServiceInstance>> discoverResult;
                 try {
-                    final DiscoverRequest discoverRequest = DiscoverRequest.newBuilder()
-                            .setDescName(resolver.authority)
-                            .build();
-                    discoverResponse = RadishNameResolver.this.discoveryStub.discover(discoverRequest);
+                    discoverResult = RadishNameResolver.this.serviceDiscovery.find(this.resolver.authority);
                 } catch (Exception e) {
                     logger.error("resolve internal error ", e);
 
@@ -203,18 +200,18 @@ public class RadishNameResolverProvider extends NameResolverProvider {
                     return;
                 }
 
-                if (discoverResponse == null
-                        || discoverResponse.getInstanceList() == null
-                        || discoverResponse.getInstanceList().isEmpty()) {
+                if (discoverResult == null
+                        || !discoverResult.isPresent()
+                        || discoverResult.get().isEmpty()) {
                     savedListener.onError(
                             Status.UNAVAILABLE.withDescription(
                                     "Unable to resolve service info " + resolver.authority));
                     return;
                 }
 
-                final List<InstanceInfo> instanceInfoList = discoverResponse.getInstanceList();
+                final Collection<ServiceInstance> instanceInfoList = discoverResult.get();
                 if (logger.isInfoEnabled()) {
-                    for (InstanceInfo instanceInfo : instanceInfoList) {
+                    for (ServiceInstance instanceInfo : instanceInfoList) {
                         logger.info("service {} provider: {}:{}", resolver.authority,
                                 instanceInfo.getIp(), instanceInfo.getPort());
                     }
