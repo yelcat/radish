@@ -11,8 +11,9 @@
     <description>Radish service framework</description>
 
     <modules>
-        <module>radish-core</module>
+        <module>grpc</module>
         <module>spring-boot-starter</module>
+        <module>apigateway-server</module>
     </modules>
 
     <properties>
@@ -314,6 +315,16 @@
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>4.5.8</version>
+            </dependency>
+            <dependency>
+                <groupId>io.kubernetes</groupId>
+                <artifactId>client-java</artifactId>
+                <version>8.0.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-webflux</artifactId>
+                <version>2.3.0.RELEASE</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
