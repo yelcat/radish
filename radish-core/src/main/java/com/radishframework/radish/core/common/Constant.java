@@ -10,16 +10,6 @@ import static io.grpc.Metadata.ASCII_STRING_MARSHALLER;
 public class Constant {
     public static final Logger LOG = LoggerFactory.getLogger(Constant.class);
 
-    // 特定context value
-    public final static String CTX_VALUE_GW_APP_ID_YPDJ = "ypdj";   // APP ID值 - 谊品到家
-    public final static String CTX_VALUE_GW_APP_PLATFORM_WXAPP = "wxApp"; // APP平台值 - 微信程序
-    public final static String CTX_VALUE_GW_APP_PLATFORM_IOS = "iOS"; // APP平台值 - iOS程序
-    public final static String CTX_VALUE_GW_APP_PLATFORM_ANDROID = "android"; // 请求的客户端APP平台值 - 安卓程序
-    public final static String CTX_VALUE_GW_APP_PLATFORM_WEB = "web"; // APP平台值 - web应用
-    public final static String OSTRICH_URL_PREFIX = "radish://"; // radish url前缀信息
-    public final static String DEFAULT_LOAD_BALANCING_POLICY = "round_robin"; // 默认负载均衡策略
-    public final static String ETCD_PATH_SPLITTER = "/"; // ETCD路径分隔符
-    public final static String ETCD_SERVICES_INSTANCE_PATH_PREFIX = ETCD_PATH_SPLITTER + "radish" + ETCD_PATH_SPLITTER + "instances"; // 服务前缀
     public final static int SERVICE_AUTO_REGISTRY_INTERVAL = 300; // s, 5分钟
     public final static int SERVICE_RETRY_REGISTRY_INTERVAL = 3; // s, 3秒
 

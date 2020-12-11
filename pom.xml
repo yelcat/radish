@@ -4,14 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.radishframework.radish</groupId>
-    <artifactId>radish-parent</artifactId>
+    <artifactId>radish</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>Radish service framework</description>
 
     <modules>
-        <module>grpc</module>
+        <module>radish-core</module>
         <module>spring-boot-starter</module>
         <module>apigateway-server</module>
     </modules>
@@ -20,8 +20,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <radish.version>1.0-SNAPSHOT</radish.version>
-        <grpc.version>1.26.0</grpc.version>
-        <protobuf.version>3.11.0</protobuf.version>
+        <grpc.version>1.34.0</grpc.version>
+        <opentelemetry.version>0.12.0</opentelemetry.version>
         <protoc.version>3.0.0</protoc.version>
         <springboot.version>2.2.6.RELEASE</springboot.version>
         <jaegerclient.version>0.35.5</jaegerclient.version>
@@ -116,34 +116,19 @@
                 <version>${radish.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient_hotspot</artifactId>
-                <version>0.6.0</version>
+                <groupId>io.fabric8</groupId>
+                <artifactId>kubernetes-client</artifactId>
+                <version>4.13.0</version>
             </dependency>
             <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient_common</artifactId>
-                <version>0.6.0</version>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-api</artifactId>
+                <version>${opentelemetry.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.jaegertracing</groupId>
-                <artifactId>jaeger-client</artifactId>
-                <version>0.35.5</version>
-            </dependency>
-            <dependency>
-                <groupId>io.opentracing</groupId>
-                <artifactId>opentracing-api</artifactId>
-                <version>0.33.0</version>
-            </dependency>
-            <dependency>
-                <groupId>io.opentracing.contrib</groupId>
-                <artifactId>opentracing-grpc</artifactId>
-                <version>0.2.1</version>
-            </dependency>
-            <dependency>
-                <groupId>io.grpc</groupId>
-                <artifactId>grpc-context</artifactId>
-                <version>${grpc.version}</version>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-sdk</artifactId>
+                <version>${opentelemetry.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.grpc</groupId>
@@ -153,11 +138,6 @@
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-protobuf</artifactId>
-                <version>${grpc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.grpc</groupId>
-                <artifactId>grpc-services</artifactId>
                 <version>${grpc.version}</version>
             </dependency>
             <dependency>
@@ -172,7 +152,7 @@
             </dependency>
             <dependency>
                 <groupId>io.grpc</groupId>
-                <artifactId>grpc-netty</artifactId>
+                <artifactId>grpc-netty-shaded</artifactId>
                 <version>${grpc.version}</version>
             </dependency>
             <dependency>
@@ -191,16 +171,6 @@
                 <version>0.1.5</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>2.10.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.auto.service</groupId>
-                <artifactId>auto-service</artifactId>
-                <version>1.0-rc6</version>
-            </dependency>
-            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>28.1-jre</version>
@@ -216,24 +186,9 @@
                 <version>1.12</version>
             </dependency>
             <dependency>
-                <groupId>com.ibm.etcd</groupId>
-                <artifactId>etcd-java</artifactId>
-                <version>0.0.14</version>
-            </dependency>
-            <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>1.25</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java</artifactId>
-                <version>${protobuf.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java-util</artifactId>
-                <version>${protobuf.version}</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
@@ -279,11 +234,6 @@
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>6.0.16.Final</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hashids</groupId>
-                <artifactId>hashids</artifactId>
-                <version>1.0.3</version>
             </dependency>
             <dependency>
                 <groupId>org.mybatis</groupId>

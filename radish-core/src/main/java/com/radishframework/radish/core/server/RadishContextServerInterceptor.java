@@ -34,7 +34,6 @@ public class RadishContextServerInterceptor implements ServerInterceptor {
                 Constant.CTX_KEY_USER_ID
         );
 
-
         Context ctx = Context.current();
 
         ctx = GrpcContextUtils.parseStringFromMetadata(ctx, metadata, stringKeyList);

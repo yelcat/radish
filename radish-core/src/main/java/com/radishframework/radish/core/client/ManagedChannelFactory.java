@@ -1,6 +1,5 @@
 package com.radishframework.radish.core.client;
 
-import com.radishframework.radish.core.discovery.ServiceDiscovery;
 import io.grpc.ManagedChannel;
 import io.grpc.NameResolverProvider;
 import io.grpc.internal.SharedResourceHolder;
@@ -13,10 +12,10 @@ public class ManagedChannelFactory {
     private final NameResolverProvider nameResolverProvider;
     private final ConcurrentHashMap<String, ManagedChannelResource> serviceResources = new ConcurrentHashMap<>();
 
-    public ManagedChannelFactory(String forAppName, ServiceDiscovery serviceDiscovery) {
+    public ManagedChannelFactory(String forAppName) {
         this.forAppName = forAppName;
 
-        this.nameResolverProvider = new RadishNameResolverProvider(serviceDiscovery);
+        this.nameResolverProvider = new KubernetesNameResolverProvider();
     }
 
     public ManagedChannel create(String serviceName) {
