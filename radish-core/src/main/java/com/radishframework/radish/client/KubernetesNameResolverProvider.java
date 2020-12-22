@@ -1,4 +1,4 @@
-package com.radishframework.radish.core.client;
+package com.radishframework.radish.client;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;

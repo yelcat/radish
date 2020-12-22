@@ -1,4 +1,4 @@
-package com.radishframework.radish.core.client;
+package com.radishframework.radish.client;
 
 public class RadishClientException extends RuntimeException {
 

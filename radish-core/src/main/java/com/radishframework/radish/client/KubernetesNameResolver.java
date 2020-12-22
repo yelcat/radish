@@ -1,4 +1,4 @@
-package com.radishframework.radish.core.client;
+package com.radishframework.radish.client;
 
 import io.fabric8.kubernetes.api.model.Endpoints;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;

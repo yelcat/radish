@@ -1,12 +1,10 @@
-package com.radishframework.radish.core.client;
+package com.radishframework.radish.client;
 
-import com.radishframework.radish.core.utils.GrpcReflectionUtils;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.NameResolverProvider;
+import io.grpc.NameResolverRegistry;
 import io.grpc.internal.SharedResourceHolder;
-import io.opentracing.contrib.grpc.OpenTracingContextKey;
-import io.opentracing.util.GlobalTracer;
 
 public final class ManagedChannelResource implements SharedResourceHolder.Resource<ManagedChannel> {
     public final static String DEFAULT_LOAD_BALANCING_POLICY = "round_robin"; // 默认负载均衡策略
@@ -24,23 +22,15 @@ public final class ManagedChannelResource implements SharedResourceHolder.Resour
 
     @Override
     public ManagedChannel create() {
+        NameResolverRegistry.getDefaultRegistry().register(nameResolverProvider);
         final ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder
                 .forTarget(KUBERNETES_URL_PREFIX + serviceName)
-                .nameResolverFactory(nameResolverProvider)
                 .userAgent(appName)
                 .defaultLoadBalancingPolicy(DEFAULT_LOAD_BALANCING_POLICY)
                 .usePlaintext();
 
-            channelBuilder.intercept(
-                    new RadishHeaderClientInterceptor(appName),
-                    RadishTracingClientInterceptor.newBuilder()
-                            .withTracer(GlobalTracer.get())
-                            .withStreaming()
-                            .withVerbosity()
-                            .withActiveSpanSource(OpenTracingContextKey::activeSpan)
-                            .withTracedAttributes(RadishTracingClientInterceptor.ClientRequestAttribute.ALL_CALL_OPTIONS)
-                            .build());
-        GrpcReflectionUtils.disableStatsAndTracingModule(channelBuilder);
+            channelBuilder.intercept(new OpenTelemetryClientInterceptor());
+
         return channelBuilder.build();
     }
 

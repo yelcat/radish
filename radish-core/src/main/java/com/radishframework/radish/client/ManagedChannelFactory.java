@@ -1,4 +1,4 @@
-package com.radishframework.radish.core.client;
+package com.radishframework.radish.client;
 
 import io.grpc.ManagedChannel;
 import io.grpc.NameResolverProvider;
