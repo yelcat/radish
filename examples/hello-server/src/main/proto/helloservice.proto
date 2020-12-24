@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.radishframework.grpc.examples.server";
+option java_outer_classname = "HelloProto";
+
+package com.radishframework.grpc.examples.server;
+
+message GreeterRequest {
+  string name = 1;
+}
+
+message GreeterResponse {
+  string result = 1;
+}
+
+service Hello {
+  rpc Greeter (GreeterRequest) returns (GreeterResponse) {}
+}

@@ -3,17 +3,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.radishframework.radish</groupId>
-    <artifactId>radish</artifactId>
+    <groupId>com.radishframework</groupId>
+    <artifactId>radish-grpc</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>Radish service framework</description>
 
     <modules>
-        <module>radish-core</module>
+        <module>core</module>
         <module>spring-boot-starter</module>
-        <module>apigateway-server</module>
         <module>examples</module>
     </modules>
 
@@ -107,12 +106,12 @@
                 <version>1.3.2</version>
             </dependency>
             <dependency>
-                <groupId>com.radishframework.radish</groupId>
+                <groupId>com.radishframework</groupId>
                 <artifactId>radish-core</artifactId>
                 <version>${radish.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.radishframework.radish</groupId>
+                <groupId>com.radishframework</groupId>
                 <artifactId>radish-spring-boot-starter</artifactId>
                 <version>${radish.version}</version>
             </dependency>

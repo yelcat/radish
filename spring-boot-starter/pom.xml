@@ -7,14 +7,14 @@
     <packaging>jar</packaging>
 
     <parent>
-        <artifactId>radish</artifactId>
-        <groupId>com.radishframework.radish</groupId>
+        <artifactId>radish-grpc</artifactId>
+        <groupId>com.radishframework</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>com.radishframework.radish</groupId>
+            <groupId>com.radishframework</groupId>
             <artifactId>radish-core</artifactId>
         </dependency>
         <dependency>
