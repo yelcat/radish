@@ -9,20 +9,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ManagedChannelFactory {
 
     private final String forAppName;
-    private final NameResolverProvider nameResolverProvider;
     private final ConcurrentHashMap<String, ManagedChannelResource> serviceResources = new ConcurrentHashMap<>();
 
     public ManagedChannelFactory(String forAppName) {
         this.forAppName = forAppName;
-
-        this.nameResolverProvider = new KubernetesNameResolverProvider();
     }
 
     public ManagedChannel create(String serviceName) {
         final ManagedChannelResource channelResource =
                 serviceResources.computeIfAbsent(serviceName,
-                        (serviceName2) -> new ManagedChannelResource(serviceName2, forAppName,
-                                nameResolverProvider));
+                        (serviceName2) -> new ManagedChannelResource(forAppName, serviceName));
         return SharedResourceHolder.get(channelResource);
     }
 

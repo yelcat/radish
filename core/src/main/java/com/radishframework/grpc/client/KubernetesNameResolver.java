@@ -1,10 +1,7 @@
 package com.radishframework.grpc.client;
 
 import io.fabric8.kubernetes.api.model.Endpoints;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClientException;
-import io.fabric8.kubernetes.client.Watcher;
+import io.fabric8.kubernetes.client.*;
 import io.grpc.Attributes;
 import io.grpc.EquivalentAddressGroup;
 import io.grpc.NameResolver;
@@ -31,12 +28,13 @@ public class KubernetesNameResolver extends NameResolver {
 
     public KubernetesNameResolver(
             final String namespace, final String name, final int port,
-            final SharedResourceHolder.Resource<ScheduledExecutorService> timerServiceResource) {
+            final SharedResourceHolder.Resource<ScheduledExecutorService> timerServiceResource,
+            final KubernetesClient kubernetesClient) {
         this.namespace = namespace;
         this.name = name;
         this.port = port;
         this.timerServiceResource = timerServiceResource;
-        this.kubernetesClient = new DefaultKubernetesClient();
+        this.kubernetesClient = kubernetesClient;
     }
 
     @Override

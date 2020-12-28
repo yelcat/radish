@@ -14,6 +14,7 @@
     <modules>
         <module>hello-client</module>
         <module>hello-server</module>
+        <module>hello-proto</module>
     </modules>
 
     <properties>

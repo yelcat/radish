@@ -1,9 +1,13 @@
 package com.radishframework.grpc.server.springboot;
 
+import com.radishframework.grpc.client.KubernetesNameResolverProvider;
 import com.radishframework.grpc.server.OpenTelemetryServerInterceptor;
 import com.radishframework.grpc.server.springboot.RadishProperties.RadishServerProperties;
 import com.radishframework.grpc.server.annotations.GrpcService;
 import io.grpc.*;
+import io.grpc.health.v1.HealthCheckResponse;
+import io.grpc.protobuf.services.ProtoReflectionService;
+import io.grpc.services.HealthStatusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.KotlinReflectionParameterNameDiscoverer;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import java.util.List;
@@ -34,18 +39,28 @@ public class SpringBootServerRunner implements CommandLineRunner {
     private RadishProperties radishProperties;
     @Value("${spring.application.name}")
     private String applicationName;
-
-    private final List<ServerServiceDefinition> scannedServices = newArrayList();
+    private HealthStatusManager healthStatusManager = new HealthStatusManager();
 
     @Override
     public void run(String... args) throws Exception {
         final RadishServerProperties serverProperties = radishProperties.getServer();
         final ServerBuilder<?> serverBuilder =
                 ServerBuilder.forPort(serverProperties.getPort());
-        addServices(serverBuilder, new OpenTelemetryServerInterceptor(applicationName));
+
+        addServices(serverBuilder, healthStatusManager, new OpenTelemetryServerInterceptor(applicationName));
+        serverBuilder.addService(ProtoReflectionService.newInstance());
+        serverBuilder.addService(healthStatusManager.getHealthService());
+
+        final Server server = serverBuilder.build();
+        server.start();
+        log.info("Grpc server started at port " + serverProperties.getPort());
+
+        // await for application termination
+        server.awaitTermination();
+        Runtime.getRuntime().addShutdownHook(new Thread(server::shutdownNow));
     }
 
-    private void addServices(ServerBuilder<?> serverBuilder, ServerInterceptor... globalInterceptors) {
+    private void addServices(ServerBuilder<?> serverBuilder, HealthStatusManager healthStatusManager, ServerInterceptor... globalInterceptors) {
         Stream.of(applicationContext.getBeanNamesForType(BindableService.class)).filter(name -> {
             final BeanDefinition beanDefinition = applicationContext.getBeanFactory().getBeanDefinition(name);
             final Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(GrpcService.class);
@@ -70,7 +85,9 @@ public class SpringBootServerRunner implements CommandLineRunner {
                 serviceDefinition = ServerInterceptors.intercept(serviceDefinition, serverInterceptor);
             }
             serverBuilder.addService(serviceDefinition);
-            scannedServices.add(serviceDefinition);
+            healthStatusManager.setStatus(
+                    serviceDefinition.getServiceDescriptor().getName(),
+                    HealthCheckResponse.ServingStatus.SERVING);
         });
     }
 }

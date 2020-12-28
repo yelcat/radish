@@ -2,6 +2,8 @@ package com.radishframework.grpc.client;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClient;
 import io.grpc.NameResolver;
 import io.grpc.NameResolverProvider;
 import io.grpc.internal.GrpcUtil;
@@ -19,6 +21,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 public class KubernetesNameResolverProvider extends NameResolverProvider {
     public static final String SCHEME = "kubernetes";
     public static final String URI_ERROR_MESSAGE = "Must be formatted like kubernetes:///{namespace}/{service}/{port}";
+
+    final KubernetesClient kubernetesClient = new DefaultKubernetesClient();
 
     @Override
     protected boolean isAvailable() {
@@ -41,7 +45,7 @@ public class KubernetesNameResolverProvider extends NameResolverProvider {
         checkArgument(targetPath.startsWith("/"),
                 "the path component (%s) of the target (%s) must start with '/'", targetPath, targetUri);
 
-        final Iterator<String> parts = Splitter.on("/").split(targetPath).iterator();
+        final Iterator<String> parts = Splitter.on("/").split(targetPath.substring(1)).iterator();
         checkArgument(parts.hasNext(), URI_ERROR_MESSAGE);
         final String namespace = parts.next();
 
@@ -58,7 +62,7 @@ public class KubernetesNameResolverProvider extends NameResolverProvider {
             throw new IllegalArgumentException("Unable to parse port number", e);
         }
 
-        return new KubernetesNameResolver(namespace, serviceName, port, GrpcUtil.TIMER_SERVICE);
+        return new KubernetesNameResolver(namespace, serviceName, port, GrpcUtil.TIMER_SERVICE, kubernetesClient);
     }
 
     @Override

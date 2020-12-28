@@ -12,17 +12,14 @@ public final class ManagedChannelResource implements SharedResourceHolder.Resour
 
     private final String serviceName;
     private final String appName;
-    private final NameResolverProvider nameResolverProvider;
 
-    ManagedChannelResource(String serviceName, String appName, NameResolverProvider nameResolverProvider) {
-        this.serviceName = serviceName;
+    ManagedChannelResource(String appName, String serviceName) {
         this.appName = appName;
-        this.nameResolverProvider = nameResolverProvider;
+        this.serviceName = serviceName;
     }
 
     @Override
     public ManagedChannel create() {
-        NameResolverRegistry.getDefaultRegistry().register(nameResolverProvider);
         final ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder
                 .forTarget(KUBERNETES_URL_PREFIX + serviceName)
                 .userAgent(appName)
