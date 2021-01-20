@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: helloclient
+  name: helloclient
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloclient
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: helloclient
+    spec:
+      containers:
+      - image: hello-client:1.0-SNAPSHOT
+        name: hello-client
+        resources: {}
+status: {}

@@ -32,6 +32,17 @@
         <jdk.version>11</jdk.version>
     </properties>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-snapshots</id>
+            <url>https://repo.spring.io/snapshot</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>spring-milestones</id>
+            <url>https://repo.spring.io/milestone</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <build>
         <plugins>
             <plugin>
@@ -116,9 +127,9 @@
                 <version>${radish.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.fabric8</groupId>
-                <artifactId>kubernetes-client</artifactId>
-                <version>4.13.0</version>
+              <groupId>io.fabric8</groupId>
+              <artifactId>kubernetes-client</artifactId>
+              <version>5.0.0</version>
             </dependency>
             <dependency>
                 <groupId>io.opentelemetry</groupId>

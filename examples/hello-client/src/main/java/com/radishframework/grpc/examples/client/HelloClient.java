@@ -2,9 +2,9 @@ package com.radishframework.grpc.examples.client;
 
 import com.google.common.base.Splitter;
 import com.radishframework.grpc.client.ManagedChannelFactory;
-import com.radishframework.grpc.examples.server.GreeterRequest;
-import com.radishframework.grpc.examples.server.GreeterResponse;
-import com.radishframework.grpc.examples.server.HelloGrpc;
+import com.radishframework.grpc.examples.hello.GreeterRequest;
+import com.radishframework.grpc.examples.hello.GreeterResponse;
+import com.radishframework.grpc.examples.hello.HelloGrpc;
 import io.grpc.ManagedChannel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;

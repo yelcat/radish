@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: helloservice
+spec:
+  # type 一共有四種(ClusterIP, NodePort, LoadBalancer, ExternalName)
+  # 預設是 ClusterIP
+  type: ClusterIP
+  # 選擇帶有 "app=MyApp" 的 pod
+  selector:
+    app: helloserver
+  # Service 實際對外服務的設定
+  ports:
+  - protocol: TCP
+    port: 8086
+    # 此為 Pod 對外開放的 port number
+    targetPort: 8086

@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: helloserver
+  name: helloserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloserver
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: helloserver
+    spec:
+      containers:
+      - image: hello-server:2.4.1
+        name: hello-server
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: helloservice
+  name: helloservice
+spec:
+  ports:
+  - name: 8086-8086
+    port: 8086
+    protocol: TCP
+    targetPort: 8086
+  selector:
+    app: helloservice
+  type: ClusterIP
+status:
+  loadBalancer: {}
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: helloservice
+  name: helloservice
+spec:
+  ports:
+  - name: 8086-8086
+    port: 8086
+    protocol: TCP
+    targetPort: 8086
+  selector:
+    app: helloservice
+  type: ClusterIP
+status:
+  loadBalancer: {}
