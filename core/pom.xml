@@ -46,10 +46,6 @@
             <artifactId>opentelemetry-exporter-logging</artifactId>
         </dependency>
         <dependency>
-          <groupId>io.fabric8</groupId>
-          <artifactId>kubernetes-client</artifactId>
-        </dependency>
-        <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
         </dependency>
@@ -72,6 +68,10 @@
         <dependency>
             <groupId>ch.qos.logback.contrib</groupId>
             <artifactId>logback-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.kubernetes</groupId> 
+            <artifactId>client-java-proto</artifactId>
         </dependency>
     </dependencies>
 
@@ -110,7 +110,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <release>8</release>
+                    <release>11</release>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

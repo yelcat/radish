@@ -10,8 +10,6 @@ import io.grpc.NameResolver;
 import io.grpc.NameResolverProvider;
 import io.grpc.internal.GrpcUtil;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 
 import javax.annotation.Nullable;
 import java.net.URI;
@@ -28,8 +26,11 @@ public class KubernetesNameResolverProvider extends NameResolverProvider {
 
     public static final String SCHEME = "kubernetes";
     public static final String URI_ERROR_MESSAGE = "Must be formatted like kubernetes:///{namespace}/{service}/{port}";
+    private final String kubeApiUri;
 
-    private final KubernetesClient kubeClient = new DefaultKubernetesClient();
+    public KubernetesNameResolverProvider(String kubeApiUri) {
+        this.kubeApiUri = kubeApiUri;
+    }
 
     @Override
     protected boolean isAvailable() {
@@ -70,7 +71,7 @@ public class KubernetesNameResolverProvider extends NameResolverProvider {
             throw new IllegalArgumentException("Unable to parse port number", e);
         }
 
-        return new KubernetesNameResolver(namespace, serviceName, port, GrpcUtil.TIMER_SERVICE, kubeClient);
+        return new KubernetesNameResolver(namespace, serviceName, port, GrpcUtil.TIMER_SERVICE, this.kubeApiUri);
     }
 
     @Override
